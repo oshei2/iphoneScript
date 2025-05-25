@@ -1,11 +1,11 @@
 import csv
 import subprocess
+import time
 
-def get_iphone_imei():
+def get_imei():
     try:
         result = subprocess.run(["ideviceinfo"], capture_output=True, text=True)
-        lines = result.stdout.splitlines()
-        for line in lines:
+        for line in result.stdout.splitlines():
             if "InternationalMobileEquipmentIdentity" in line or "IMEI" in line:
                 return line.split(":")[1].strip()
         return None
@@ -15,7 +15,7 @@ def get_iphone_imei():
 
 def lookup_code(imei, csv_file="example.csv"):
     try:
-        with open(csv_file, mode="r") as f:
+        with open(csv_file, "r") as f:
             reader = csv.DictReader(f)
             for row in reader:
                 if row["IMEI"] == imei:
@@ -25,13 +25,16 @@ def lookup_code(imei, csv_file="example.csv"):
         print(f"CSV file '{csv_file}' not found.")
         return None
 
-imei = get_iphone_imei()
-if imei:
-    print("Detected IMEI:", imei)
-    code = lookup_code(imei)
-    if code:
-        print("Matched Code:", code)
-    else:
-        print("No code found for this IMEI.")
-else:
-    print("Could not detect IMEI.")
+seen_imeis = set()
+
+while True:
+    imei = get_imei()
+    if imei and imei not in seen_imeis:
+        print("Detected IMEI:", imei)
+        code = lookup_code(imei)
+        if code:
+            print("Matched Code:", code)
+        else:
+            print("No code found for this IMEI.")
+        seen_imeis.add(imei)
+    time.sleep(2)
