@@ -1,6 +1,7 @@
 # iPhone IMEI Reader
 
 A Python script to retrieve the IMEI number of a connected iPhone using `libimobiledevice`.
+Matches the IMEI to an unlock code to speed up the process for used phone companies.
 
 ## Requirements
 
